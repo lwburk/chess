@@ -24,7 +24,7 @@ function Square(i, visited, n) {
     this.name = i2an(i, n);
     this.i = i;
     this.visited = visited;
-    this.w = null;
+    this.weight = 0;
 }
 
 function knightMoves(square, board, n, follow) {
@@ -42,15 +42,19 @@ function knightMoves(square, board, n, follow) {
             var move = board[pos];
             if (move !== -1 && move && move.visited === false) {
                 if (follow) {
-                    move.w = knightMoves(move, board, n, false).length;
+                    move.weight = knightMoves(move, board, n, false).length;
                 }
                 moves.push(move);
             }
         });
     });
-    return moves.sort(function(a, b) {
-        return a.w - b.w;
-    });
+    // Warnsdorff's rule: always prefer the path with the fewest onward options
+    return moves.sort(warnsdorff);
+}
+
+// sort by the number of onward paths (ascending)
+function warnsdorff(a, b) {
+    return a.weight - b.weight;
 }
 
 function tour(n, square) {
